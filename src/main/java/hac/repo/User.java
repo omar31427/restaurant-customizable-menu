@@ -6,8 +6,9 @@ import jakarta.persistence.Id;
 
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-
+import org.springframework.data.relational.core.mapping.Table;
 @Entity
+@Table("User")
 public class User implements Serializable {
 
     @Id

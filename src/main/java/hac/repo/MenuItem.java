@@ -1,26 +1,27 @@
 package hac.repo;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-
+import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.relational.core.mapping.Table;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@Table("MenuItem")
 public class MenuItem implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long menuItem_id;
-
-
+    private long menuItemId;
+    @Max(100)
+    @PositiveOrZero
+    private double price;
     @NotEmpty
-    private String name;
+    private String menuItemName;
     @ManyToMany
-    @JoinTable(
-            name = "Ingredient",
-            joinColumns = @JoinColumn(name = "sandwich_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
-    )
     private List<Ingredient> ingredients ;
 
     private String imagePath;
@@ -30,23 +31,23 @@ public class MenuItem implements Serializable{
     }
 
     public MenuItem(String name, List<Ingredient> ingredients,String imagePath){
-        this.name = name;
+        this.menuItemName = name;
         this.ingredients = ingredients;
         this.imagePath = imagePath;
     }
     public long getId(){
-        return this.menuItem_id;
+        return this.menuItemId;
     }
 
     public void setId(long id ){
-        this.menuItem_id = id;
+        this.menuItemId = id;
     }
     public String getName() {
-        return name;
+        return menuItemName;
     }
 
     public void setName(String newName){
-        this.name = newName;
+        this.menuItemName = newName;
     }
 
     public List<Ingredient> getIngredients(){

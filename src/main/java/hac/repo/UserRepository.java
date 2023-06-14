@@ -1,10 +1,12 @@
 package hac.repo;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 /* default scope of this Bean is "singleton" */
+@Scope("singleton")
 public interface UserRepository extends JpaRepository<User, Long> {
 
     /** SOME EXAMPLES:

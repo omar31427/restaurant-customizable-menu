@@ -2,23 +2,21 @@ package hac.repo;
 
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.springframework.stereotype.Component;
-
+import org.springframework.data.relational.core.mapping.Table;
 import java.io.Serializable;
 @Entity
+@Table("Ingredient")
 public class Ingredient implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long ingredient_id;
+    private long ingredientId;
 
 
     @NotEmpty
-    private String name;
+    private String ingredientName;
     @NotNull
     private boolean isVegan;
     @NotNull
@@ -29,22 +27,22 @@ public class Ingredient implements Serializable{
     }
 
     public Ingredient(String name, boolean vegan, boolean vegetarian){
-        this.name = name;
+        this.ingredientName = name;
         this.isVegan = vegan;
         this.isVegetarian = vegetarian;
     }
     public long getId(){
-        return ingredient_id;
+        return ingredientId;
     }
 
     public void setId(long id){
-        this.ingredient_id = id;
+        this.ingredientId = id;
     }
     public String getName() {
-        return name;
+        return ingredientName;
     }
     public void setName(String newName){
-        this.name = newName;
+        this.ingredientName = newName;
     }
 
     public boolean getIsVegan(){

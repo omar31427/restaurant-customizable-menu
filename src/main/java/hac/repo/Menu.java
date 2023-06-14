@@ -4,48 +4,44 @@ import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-
+import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
 @Entity
+@Table("Menu")
 public class Menu implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long Menu_id;
+    private long menuId;
 
     @NotEmpty
-    private String name;
+    private String menuName;
     @OneToMany
-    @JoinTable(
-            name = "MenuItem",
-            joinColumns = @JoinColumn(name = "Menu_id"),
-            inverseJoinColumns = @JoinColumn(name = "MenuItem_id")
-    )
-    private List<Ingredient> sandwiches ;
+    private List<MenuItem> menuItems ;
 
     private String iconPath;
 
     public long getId(){
-        return Menu_id;
+        return menuId;
     }
 
     public void setId(long id)
     {
-        this.Menu_id = id;
+        this.menuId = id;
     }
     public String getName() {
-        return name;
+        return menuName;
     }
 
     public void setName(String name){
-        this.name = name;
+        this.menuName = name;
     }
 
-    public List<Ingredient> getSandwiches(){
-        return sandwiches;
+    public List<MenuItem> getMenuItems(){
+        return menuItems;
     }
 
-    public void setSandwiches(List<Ingredient> sandwiches){
-        this.sandwiches = sandwiches;
+    public void setMenuItems(List<MenuItem> sandwiches){
+        this.menuItems = sandwiches;
     }
 
     public String getIconPath(){
