@@ -30,6 +30,8 @@ public class RestaurantController {
     private MenuServices menuService;
     @Autowired
     private MenuRepository menuRepo;
+    //@Autowired
+    //private FormWrapper formWrapper;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -37,9 +39,10 @@ public class RestaurantController {
         return "index";
     }
     @GetMapping("/menuEditor")
-    public String openMenuEditor( Model model)
+    public String openMenuEditor(  Model model)
     {
-        model.addAttribute("formWrapper", new FormWrapper());
+        FormWrapper formWrapper = new FormWrapper(new Menu(),new MenuItem());
+        model.addAttribute("formWrapper", formWrapper);
        //model.addAttribute("menuItems",menuItemService.getAllItems());
         return "menu-editor";
     }

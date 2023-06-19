@@ -10,20 +10,26 @@ import lombok.Setter;
 import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
 
-@Getter
-@Setter
+
 @Entity
 @Table("Menu")
 public class Menu implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Getter
+    @Setter
     private long menuId;
-
+    @Getter
+    @Setter
     @NotEmpty(message = "Name is mandatory")
     private String menuName;
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    @Getter
+    @Setter
     private List<MenuItem> menuItems;
 
+    @Getter
+    @Setter
     private String iconPath;
     public Menu() {
 
