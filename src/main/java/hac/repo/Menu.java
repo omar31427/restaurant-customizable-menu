@@ -4,8 +4,14 @@ import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
+
+@Getter
+@Setter
 @Entity
 @Table("Menu")
 public class Menu implements Serializable{
@@ -13,42 +19,23 @@ public class Menu implements Serializable{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long menuId;
 
-    @NotEmpty
+    @NotEmpty(message = "Name is mandatory")
     private String menuName;
-    @OneToMany
-    private List<MenuItem> menuItems ;
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    private List<MenuItem> menuItems;
 
     private String iconPath;
+    public Menu() {
 
-    public long getId(){
-        return menuId;
     }
-
-    public void setId(long id)
+    public Menu(String name)
     {
-        this.menuId = id;
-    }
-    public String getName() {
-        return menuName;
-    }
-
-    public void setName(String name){
         this.menuName = name;
     }
 
-    public List<MenuItem> getMenuItems(){
-        return menuItems;
+
+    public void addItem(MenuItem newItem){
+        this.menuItems.add(newItem);
     }
 
-    public void setMenuItems(List<MenuItem> sandwiches){
-        this.menuItems = sandwiches;
-    }
-
-    public String getIconPath(){
-        return iconPath;
-    }
-
-    public void setIconPath(String iconPath){
-        this.iconPath = iconPath;
-    }
 }

@@ -31,17 +31,17 @@ public class Ingredient implements Serializable{
         this.isVegan = vegan;
         this.isVegetarian = vegetarian;
     }
-    public long getId(){
+    public long getIngredientId(){
         return ingredientId;
     }
 
-    public void setId(long id){
+    public void setIngredientId(long id){
         this.ingredientId = id;
     }
-    public String getName() {
+    public String getIngredientName() {
         return ingredientName;
     }
-    public void setName(String newName){
+    public void setIngredientName(String newName){
         this.ingredientName = newName;
     }
 

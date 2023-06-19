@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Hello</title>
@@ -8,6 +9,13 @@
 <h1 th:text="${greeting}"></h1>
     <p>This is a test page.</p>
     <p>Delete it from your repo before submission!</p>
-
+    <p>paragraphs work</p>
+<form action="#" th:action="@{/menuEditor}" method="get">
+    <div class="row">
+        <div class="col-md-6 mt-5">
+            <input type="submit" class="btn btn-primary" value="Add Menu">
+        </div>
+    </div>
+</form>
 </body>
 </html>
