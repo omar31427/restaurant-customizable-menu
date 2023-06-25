@@ -20,7 +20,8 @@ public class MenuItem implements Serializable{
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long menuItemId;
+    @Column(insertable = false, updatable = false)
+    private long item_id;
     @Getter
     @Setter
     @Max(100)
@@ -30,30 +31,32 @@ public class MenuItem implements Serializable{
     @Setter
     @NotEmpty
     private String menuItemName;
-    @ManyToMany
+   /* @ManyToMany
     @Getter
     @Setter
     private List<Ingredient> ingredients ;
-    @ManyToOne
-    @JoinColumn(name = "menuId")
+    */
+
+   @ManyToOne(fetch = FetchType.EAGER)
+   @JoinColumn(name = "menu_id")
+   @Getter
+   @Setter
+   private Menu menu;
     @Getter
     @Setter
-    private Menu menu;
-    @Getter
-    @Setter
-    private String menuItemImagePath;
+    private String menuItemImagePath = "";
 
     public MenuItem(){
 
     }
 
-    public MenuItem( String name, List<Ingredient> ingredients,String imagePath,double price){
+    /*public MenuItem( String name, List<Ingredient> ingredients,String imagePath,double price){
 
         this.menuItemName = name;
         this.ingredients = ingredients;
         this.menuItemImagePath = imagePath;
         this.menuItemPrice = price;
-    }
+    }*/
     public MenuItem( String name, String imagePath,double price){
 
         this.menuItemName = name;

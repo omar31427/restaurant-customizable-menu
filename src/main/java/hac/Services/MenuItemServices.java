@@ -15,14 +15,12 @@ import java.util.Optional;
 @Transactional
 @Service
 public class MenuItemServices{
-    @Qualifier("MenuItemRepository")
+    @Autowired
     private MenuItemRepository repository;
     public void addMenuItems(ArrayList<MenuItem> menuItems) {
         repository.saveAll(menuItems);
     }
-    public List<MenuItem> getItemsByMenu (Menu menu) {
-        return repository.findMenuItemByMenu(menu);
-    }
+
     public List<MenuItem> getAllItems(){
         return repository.findAll();
     }
@@ -42,11 +40,11 @@ public class MenuItemServices{
     public Optional<MenuItem> getMenuItem(long id) {
         return repository.findById(id);
     }
-    public List<MenuItem> getMenuItemByPrice(double price){
-        return repository.findByMenuItemPriceLessThan(price);
-    }
-    public List<MenuItem> getMenuItemByIngredients(Ingredient ingredients){
-        return repository.findByIngredientsContaining(ingredients);
-    }
+    //public List<MenuItem> getMenuItemByMenuItemPrice (double price){
+        //return repository.findByMenuItemPriceLessThan(price);
+   // }
+    //public List<MenuItem> getMenuItemByIngredients(Ingredient ingredients){
+      //  return repository.findByIngredientsContaining(ingredients);
+    //}
 
 }

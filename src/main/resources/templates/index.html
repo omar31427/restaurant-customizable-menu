@@ -2,8 +2,13 @@
 <html lang="en">
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Hello</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 </head>
 <body>
 <h1 th:text="${greeting}"></h1>
@@ -11,11 +16,29 @@
     <p>Delete it from your repo before submission!</p>
     <p>paragraphs work</p>
 <form action="#" th:action="@{/menuEditor}" method="get">
+    <input type="hidden" name="menu_id" th:value="${menu_id}" />
     <div class="row">
         <div class="col-md-6 mt-5">
-            <input type="submit" class="btn btn-primary" value="Add Menu">
+            <input type="submit" class="btn btn-primary" value="go to menu editor">
         </div>
     </div>
 </form>
+<table class="table table-striped table-responsive-md">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Image path</th>
+    </tr>
+    </thead>
+    <tbody th:object="${menu}">
+    <tr th:each="item: ${menu.menuItems}">
+        <td th:text="${item.menuItemName}"></td>
+        <td th:text="${item.menuItemPrice}"></td>
+        <td th:text="${item.menuItemImagePath}"></td>
+
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

@@ -1,108 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Menu Editor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Menu Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 </head>
 <body>
-<div class="container my-5">
+<div class="container my-5" >
 
-  <div class="row">
-    <div class="col-md-6">
 
-      <!--  th:object: declares the model object to use for collecting the form data
-      th:field: the fields in the user object.
-      -->
-      <form action="#" th:action="@{/validateMenu}" th:object="${formWrapper}" method="post">
-        <div class="row">
-         <div class="form-group col-md-6">
-            <label for="menuName" class="col-form-label">Menu name</label>
-            <input type="text" th:field="*{menu.menuName}" class="form-control" id="menuName" placeholder="Menu Name">
-            <span th:if="${#fields.hasErrors('menuName')}" th:errors="*{menu.menuName}" class="text-danger"></span>
-          </div>
-        </div>
-          <label for="menuItemName" class="col-form-label">Menu item name</label>
-          <input type="text" th:field="*{menuItem.menuItemName}" class="form-control" id="menuItemName"
-                 placeholder="Menu item name">
-          <span th:if="${#fields.hasErrors('menuItemName')}" th:errors="*{menuItem.menuItemName}"
-                class="text-danger"></span>
-
-          <label for="menuItemImagePath" class="col-form-label">Menu item image</label>
-          <input type="text" th:field="*{menuItem.menuItemImagePath}" class="form-control" id="menuItemImagePath"
-                 placeholder="Menu item image path">
-          <span th:if="${#fields.hasErrors('menuItemImagePath')}" th:errors="*{menuItem.menuItemImagePath}"
-                class="text-danger"></span>
-
-          <label for="menuItemPrice" class="col-form-label">Menu item price</label>
-          <input type="text" th:field="*{menuItem.menuItemPrice}" class="form-control" id="menuItemPrice"
-                 placeholder="Menu item price">
-          <span th:if="${#fields.hasErrors('menuItemPrice')}" th:errors="*{menuItem.menuItemPrice}"
-                class="text-danger"></span>
-
-          <div class="row">
-              <div class="col-md-6 mt-5">
-                  <input type="submit" class="btn btn-primary" value="Add Menu">
-              </div>
-          </div>
-
-      </form>
-
-      <!--  <div class="container my-5" >
+    <form th:action="@{/validateMenuItem}" method="post" th:object="${menuItem}">
 
             <div class="row">
-                <div class="col-md-6">
-                    <form th:action="@{/validateMenuItem}" method="post" th:object="${formWrapper.menuItem}">
+                <div class="form-group col-md-6" th:object="${menu}">
 
-                        <label for="menuItemName" class="col-form-label">Menu item name</label>
-                        <input type="text" th:field="*{menuItemName}" class="form-control" id="menuItemName"
-                               placeholder="Menu item name">
-                        <span th:if="${#fields.hasErrors('menuItemName')}" th:errors="*{menuItemName}"
-                              class="text-danger"></span>
+                    <label for="menuName" class="col-form-label">Menu name</label>
+                    <input type="text" th:field="*{menuName}" class="form-control" id="menuName"
+                           placeholder="${menuName != null ?menuName : 'Menu Name'}">
+                    <input type="hidden" name="menu_id" th:value="${menu_id}" />
+                    <span th:if="${#fields.hasErrors('menuName')}" th:errors="*{menuName}"
+                          class="text-danger"></span>
+                </div>
 
-                        <label for="menuItemImagePath" class="col-form-label">Menu item image</label>
-                        <input type="text" th:field="*{menuItemImagePath}" class="form-control" id="menuItemImagePath"
-                               placeholder="Menu item image path">
-                        <span th:if="${#fields.hasErrors('menuItemImagePath')}" th:errors="*{menuItemImagePath}"
-                              class="text-danger"></span>
+            </div>
+            <label for="menuItemName" class="col-form-label">Menu item name</label>
+            <input type="text" th:field="*{menuItemName}" class="form-control" id="menuItemName"
+                   placeholder="Menu item name">
+            <span th:if="${#fields.hasErrors('menuItemName')}" th:errors="*{menuItemName}"
+                  class="text-danger"></span>
 
-                        <label for="menuItemPrice" class="col-form-label">Menu item price</label>
-                        <input type="text" th:field="*{menuItemPrice}" class="form-control" id="menuItemPrice"
-                               placeholder="Menu item price">
-                        <span th:if="${#fields.hasErrors('menuItemPrice')}" th:errors="*{menuItemPrice}"
-                              class="text-danger"></span>
+            <label for="menuItemImagePath" class="col-form-label">Menu item image</label>
+            <input type="text" th:field="*{menuItemImagePath}" class="form-control" id="menuItemImagePath"
+                   placeholder="Menu item image path">
+            <span th:if="${#fields.hasErrors('menuItemImagePath')}" th:errors="*{menuItemImagePath}"
+                  class="text-danger"></span>
 
-                        <div class="row">
-                            <div class="col-md-6 mt-5">
-                                <input type="submit" class="btn btn-primary" value="Add Menu Item">
-                            </div>
-                        </div>
-                    </form>
+            <label for="menuItemPrice" class="col-form-label">Menu item price</label>
+            <input type="text" th:field="*{menuItemPrice}" class="form-control" id="menuItemPrice"
+                   placeholder="Menu item price">
+            <span th:if="${#fields.hasErrors('menuItemPrice')}" th:errors="*{menuItemPrice}"
+                  class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6 mt-5">
+                    <input type="submit" class="btn btn-primary" value="Add Menu Item">
                 </div>
             </div>
-        </div>-->
-        <table class="table table-striped table-responsive-md" >
-            <thead>
-            <tr>
-                <th>Price</th>
-                <th>Name</th>
-                <th>Image path</th>
-            </tr>
-            </thead>
-            <tbody >
-            <tr th:each="item: ${formWrapper.menu.menuItems}">
-                <td th:text="${item.menuItemPrice}"></td>
-                <td th:text="${item.menuItemName}"></td>
-                <td th:text="${item.menuItemImagePath}"></td>
 
-            </tr>
-            </tbody>
-        </table>
-    </div>
-  </div>
+    </form>
+    <form th:action="@{/showItems}" th:object="${menu_id}" method="post">
+        <input type="hidden" name="menu_id" th:value="${menu_id}" />
+        <input type="submit" class="btn btn-primary" value="Submit Menu">
+    </form>
+    <table class="table table-striped table-responsive-md">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Image path</th>
+        </tr>
+        </thead>
+        <tbody th:object="${menu}">
+        <tr th:each="item: ${menu.menuItems}">
+            <td th:text="${item.menuItemName}"></td>
+            <td th:text="${item.menuItemPrice}"></td>
+            <td th:text="${item.menuItemImagePath}"></td>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 </div>
 </body>
 </html>

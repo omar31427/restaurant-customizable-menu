@@ -3,6 +3,7 @@ import hac.repo.MenuItem;
 import hac.repo.MenuRepository;
 import hac.repo.Menu;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,11 @@ import java.util.Optional;
 @Transactional
 @Service
 public class MenuServices{
-    @Qualifier("MenuRepository")
+    @Autowired
     private MenuRepository repository;
+    public List<Menu> getAllMenus(){
+        return repository.findAll();
+    }
     public void addMenu(ArrayList<Menu> Menus) {
         repository.saveAll(Menus);
     }
@@ -29,6 +33,9 @@ public class MenuServices{
     }
     public void updateMenu(Menu Menu) {
         repository.save(Menu);
+    }
+    public Optional<Menu> getMenuByName(String name){
+        return repository.findMenuByMenuName(name);
     }
     public Menu createNewMenu() {return new Menu();}
     public Optional<Menu> getMenu(long id) {
