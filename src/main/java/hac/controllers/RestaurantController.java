@@ -3,22 +3,18 @@ package hac.controllers;
 import hac.Services.IngredientServices;
 import hac.Services.MenuItemServices;
 import hac.Services.MenuServices;
-import hac.Services.UserServices;
 import hac.repo.*;
 import jakarta.validation.Valid;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.security.Principal;
 
 
 /** this is a test controller, delete/replace it when you start working on your project */
@@ -34,8 +30,11 @@ public class RestaurantController {
     private MenuServices menuService;
     @Autowired
     private MenuRepository menuRepo;
-
-    @GetMapping("/")
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+    @RequestMapping("/")
     public String index(Model model) {
         System.out.println("hello");
         Menu menu = new Menu();
@@ -65,16 +64,17 @@ public class RestaurantController {
         model.addAttribute("greeting", "item successfully added");
         return "index";
     }
-    @GetMapping("/menuEditor")
-    public String openMenuEditor( Model model)
+    @GetMapping("/admin/menu-editor")
+    public String openMenuEditor(Model model, Principal principal)
     {
+        System.out.println("get menu editor");
         Menu menu = new Menu();
         MenuItem item = new MenuItem();
         menu.addItem(item);
         model.addAttribute("menu", menu);
         model.addAttribute("menuItem",item);
         model.addAttribute("menu_id", menu.getMenu_id());
-        return "menu-editor";
+        return "admin/menu-editor";
     }
 
     @PostMapping("/validateMenuItem")
@@ -90,7 +90,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",menuItem);
-            return "menu-editor";
+            return "admin/menu-editor";
         }
         if(menuIdResult.hasErrors())
         {
@@ -98,7 +98,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",menuItem);
-            return "menu-editor";
+            return "admin/menu-editor";
         }
         if(itemResult.hasErrors())
         {
@@ -106,7 +106,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",menuItem);
-            return "menu-editor";
+            return "admin/menu-editor";
         }
         try{
             if(menuService.getMenu((menu_id)).isEmpty()) {
@@ -125,7 +125,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem", menuItem);
-            return "menu-editor";
+            return "admin/menu-editor";
         }catch(Exception e){
             System.out.println("error validating new items: " +e.getMessage());
         }
@@ -137,7 +137,7 @@ public class RestaurantController {
         model.addAttribute("menu", menu);
         model.addAttribute("menu_id", menu.getMenu_id());
         model.addAttribute("menuItem",menuItem);
-        return "menu-editor";
+        return "admin/menu-editor";
     }
 
 }
