@@ -1,21 +1,34 @@
 package hac.configurations;
 
+import hac.repo.MenuItem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.context.annotation.SessionScope;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
 public class ApplicationConfig  {
+    @Bean
+    @SessionScope
+    public ArrayList<MenuItem> sessionBean() {
+        return new ArrayList<MenuItem>() ;
+    }
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder bCryptPasswordEncoder) {
@@ -42,9 +55,8 @@ public class ApplicationConfig  {
         http
                 .cors(withDefaults())
                 .csrf(withDefaults())
-
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/css/**", "/", "/index","/403").permitAll()
+                        .requestMatchers("/css/**", "/", "/index","/403","/showItems","/openMenu").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/shared/**").hasAnyRole("USER", "ADMIN")
                 )
@@ -63,6 +75,7 @@ public class ApplicationConfig  {
 
         ;
 
+
         return http.build();
 
     }
@@ -73,5 +86,6 @@ public class ApplicationConfig  {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/favicon.ico");
     }
+
 
 }

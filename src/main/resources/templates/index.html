@@ -18,31 +18,55 @@
     <p>paragraphs work</p>
 <div sec:authorize="hasRole('ROLE_ADMIN')">
 
-<form action="#" th:action="@{/admin/menu-editor}" method="get">
-<!--    <input type="hidden" name="menu_id" th:value="${menu_id}" />-->
+<!--<form action="#" th:action="@{/admin/menu-editor}" method="get">
+    <input type="hidden" name="menu_id" th:value="${menu_id}" />
     <div class="row">
         <div class="col-md-6 mt-5">
             <input type="submit" class="btn btn-primary" value="go to menu editor">
         </div>
     </div>
-</form>
+</form>-->
 </div>
 <table class="table table-striped table-responsive-md">
     <thead>
     <tr>
         <th>Name</th>
-        <th>Price</th>
-        <th>Image path</th>
     </tr>
     </thead>
-    <tbody th:object="${menu}">
-    <tr th:each="item: ${menu.menuItems}">
+    <tbody th:each="men : ${menus}">
+    <tr >
+        <td>
+            <form th:action="@{/openMenu}" method="get">
+                <input type="hidden" name="menuId" th:value="${men.menu_id}" />
+                <button type="submit" class="menu-link" th:text="${men.menuName}"></button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table table-striped table-responsive-md">
+    <thead>
+    <tr>
+        <th>Item Name</th>
+        <th>Item Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${menuItems}">
         <td th:text="${item.menuItemName}"></td>
         <td th:text="${item.menuItemPrice}"></td>
-        <td th:text="${item.menuItemImagePath}"></td>
+
+        <td>
+            <form th:action="@{/shared/addToCart}" method="get">
+                <input type="hidden" name = "item" th:value="${item}" />
+                <button type="submit" class="menu-link">add to cart</button>
+            </form>
+        </td>
 
     </tr>
     </tbody>
 </table>
+
 </body>
 </html>
