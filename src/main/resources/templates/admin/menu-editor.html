@@ -21,13 +21,15 @@
 
                     <label for="menuName" class="col-form-label">Menu name</label>
                     <input type="text" th:field="*{menuName}" class="form-control" id="menuName"
-                           placeholder="${menuName != null ?menuName : 'Menu Name'}">
+                           placeholder="Menu name">
                     <input type="hidden" name="menu_id" th:value="${menu_id}" />
                     <span th:if="${#fields.hasErrors('menuName')}" th:errors="*{menuName}"
                           class="text-danger"></span>
                 </div>
 
+
             </div>
+
             <label for="menuItemName" class="col-form-label">Menu item name</label>
             <input type="text" th:field="*{menuItemName}" class="form-control" id="menuItemName"
                    placeholder="Menu item name">
@@ -53,11 +55,13 @@
             </div>
 
     </form>
-    <form th:action="@{/showItems}" th:object="${menu_id}" method="post">
+    <form th:action="@{/showItems}" method="post">
         <input type="hidden" name="menu_id" th:value="${menu_id}" />
         <input type="submit" class="btn btn-primary" value="Submit Menu">
     </form>
-    <table class="table table-striped table-responsive-md">
+
+    <div th:if="${menu.menuItems.size() > 0}">
+   <table class="table table-striped table-responsive-md">
         <thead>
         <tr>
             <th>Name</th>
@@ -70,10 +74,17 @@
             <td th:text="${item.menuItemName}"></td>
             <td th:text="${item.menuItemPrice}"></td>
             <td th:text="${item.menuItemImagePath}"></td>
-
+            <td>
+                <form th:action="@{/admin/deleteItem}" method="post">
+                    <input type="hidden" name="menuItem_id" th:value="${item.item_id}"/>
+                    <input type="hidden" name="menu_id" th:value="${menu_id}"/>
+                    <input type="submit" class="btn btn-primary" value="remove">
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
+    </div>
 </div>
 
 </div>

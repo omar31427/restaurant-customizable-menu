@@ -22,6 +22,13 @@ public class MenuServices{
     public void addMenu(ArrayList<Menu> Menus) {
         repository.saveAll(Menus);
     }
+    public boolean isItemInMenu (Menu menu,String itemName){
+        List<MenuItem> menuItems= menu.getMenuItems();
+        for (MenuItem menuItem : menuItems)
+            if (menuItem.getMenuItemName().equals(itemName))
+                return true;
+        return false;
+    }
     public List<MenuItem> getMenuItemsByMenu(Menu menu){
         return menu.getMenuItems();
     }
@@ -41,4 +48,6 @@ public class MenuServices{
     public Optional<Menu> getMenu(long id) {
         return repository.findById(id);
     }
+
+
 }

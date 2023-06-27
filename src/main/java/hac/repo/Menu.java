@@ -28,6 +28,7 @@ public class Menu implements Serializable{
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     @Getter
     @Setter
+    @Column(unique = true)
     private List<MenuItem> menuItems = new ArrayList<>();
 
     @Getter

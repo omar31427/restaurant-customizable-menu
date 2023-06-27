@@ -66,11 +66,12 @@ public class RestaurantController {
         return "index"; // Thymeleaf template to display the menu items
     }
     @GetMapping("/shared/addToCart")
-    public String addToCart(@RequestParam("item") MenuItem menuItem) {
-        System.out.println("adding to cart");
-        cartItems.add(menuItem);
+    public String addToCart(@RequestParam("itemId") Long itemId) {
+        MenuItem newItem = menuItemService.getMenuItem(itemId).get();
 
-        return "index";
+        cartItems.add(newItem);
+
+        return "redirect:/";
     }
     @PostMapping("/shared/cart")
     public String openCart(Model model){
@@ -82,6 +83,53 @@ public class RestaurantController {
         }
         model.addAttribute("cartItems",cartItems);
         return "/shared/cart";
+    }
+    @PostMapping("/admin/editMenu")
+    public String editMenu( @Valid @RequestBody Menu menu, BindingResult menuResult,
+                            Model model){
+        System.out.println("editmenu 1");
+        if(menuResult.hasErrors())
+        {
+            System.out.println("validation error: " + menuResult.getAllErrors());
+            model.addAttribute("menu", menu);
+            model.addAttribute("menu_id", menu.getMenu_id());
+            model.addAttribute("menuItem",new MenuItem());
+            return "admin/menu-editor";
+        }
+        try{
+            System.out.println("editmenu 2");
+            if(menuService.getMenuByName(menu.getMenuName()).isPresent())
+                menu = menuService.getMenuByName(menu.getMenuName()).get();
+
+            System.out.println("validation error: " + menuResult.getAllErrors());
+            model.addAttribute("menu", menu);
+            model.addAttribute("menu_id", menu.getMenu_id());
+            model.addAttribute("menuItem",new MenuItem());
+            return "admin/menu-editor";
+        }catch(Exception e){
+            System.out.println("error in admin/editMenu" + e.getMessage());
+        }
+        System.out.println("editmenu 3");
+        return "admin/menu-editor";
+    }
+    @PostMapping("/admin/deleteItem")
+    public String deleteItem(@RequestParam("menuItem_id") Long menuItem_id,
+                             @RequestParam("menu_id") Long menu_id,
+                             Model model){
+        try{
+            Menu menu = menuService.getMenu((menu_id)).get();
+            MenuItem item = menuItemService.getMenuItem(menuItem_id).get();
+            menu.removeItem(item);
+
+            model.addAttribute("menu", menu);
+            model.addAttribute("menu_id", menu.getMenu_id());
+            model.addAttribute("menuItem",new MenuItem());
+            return "admin/menu-editor";
+        }catch(Exception e){
+            System.out.println("problem in delete item post: " + e.getMessage());
+        }
+        System.out.println("u need to add attributes");
+        return "admin/menu-editor";
     }
     @PostMapping("/showItems")
     public String indexPost(@RequestParam("menu_id") Long menu_id,
@@ -135,7 +183,7 @@ public class RestaurantController {
             model.addAttribute("menuItem",menuItem);
             return "admin/menu-editor";
         }
-        if(menuIdResult.hasErrors())
+        /*if(menuIdResult.hasErrors())
         {
             System.out.println("validation error: " + menuResult.getAllErrors());
             model.addAttribute("menu", menu);
@@ -143,6 +191,7 @@ public class RestaurantController {
             model.addAttribute("menuItem",menuItem);
             return "admin/menu-editor";
         }
+
         if(itemResult.hasErrors())
         {
             System.out.println("validation errors: " + itemResult.getAllErrors());
@@ -150,19 +199,28 @@ public class RestaurantController {
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",menuItem);
             return "admin/menu-editor";
-        }
+        }*/
         try{
-            if(menuService.getMenu((menu_id)).isEmpty()) {
+
+            if(menuService.getMenuByName(menu.getMenuName()).isPresent())
+                menu = menuService.getMenuByName(menu.getMenuName()).get();
+            else if(menuService.getMenu((menu_id)).isEmpty()) {
                 menu.setMenu_id(menu_id);
                 menuService.saveMenu(menu);
             } else
                 menu = menuService.getMenu((menu_id)).get();
 
             // Add the new item to the menu's item list and save the menu
-            menu.addItem(menuItem);
-            menuItem.setMenu(menu);
-            menuItemService.saveMenuItem(menuItem);
-            menuService.saveMenu(menu);
+            if(!menuService.isItemInMenu(menu,menuItem.getMenuItemName()) && menuItem.getMenuItemPrice() !=0) {
+                menu.addItem(menuItem);
+                menuItem.setMenu(menu);
+                menuItemService.saveMenuItem(menuItem);
+            }
+            else
+            {System.out.println("item found in menu");
+                }
+
+                menuService.saveMenu(menu);
 
             System.out.println("saved to menu: " + menu.getMenu_id());
             model.addAttribute("menu", menu);
