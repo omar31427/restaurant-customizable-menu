@@ -11,10 +11,29 @@
           integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 </head>
 <body>
+<div th:replace="~{components/navBar :: navBar}"></div>
 <div class="container my-5" >
+    <div class="row">
+    <form th:action="@{/admin/editMenu}" method="post" th:object="${menu}">
 
+        <div class="form-group col-md-6" th:object="${menu}">
 
+            <label for="menuName" class="col-form-label">Menu name</label>
+            <input type="text" th:field="*{menuName}" class="form-control" id="menuName"
+                   placeholder="Menu name">
+            <input type="hidden" name="menu_id" th:value="${menu_id}" />
+            <span th:if="${#fields.hasErrors('menuName')}" th:errors="*{menuName}"
+                  class="text-danger"></span>
+        </div>
+            <div class="col-md-6 mt-5">
+                <input type="submit" class="btn btn-primary" value="Edit menu">
+            </div>
+
+    </form>
+    </div>
+    <div>
     <form th:action="@{/admin/validateMenuItem}" method="post" th:object="${menuItem}">
+
 
             <div class="row">
                 <div class="form-group col-md-6" th:object="${menu}">
@@ -27,8 +46,8 @@
                           class="text-danger"></span>
                 </div>
 
-
             </div>
+
 
             <label for="menuItemName" class="col-form-label">Menu item name</label>
             <input type="text" th:field="*{menuItemName}" class="form-control" id="menuItemName"
@@ -50,11 +69,12 @@
 
             <div class="row">
                 <div class="col-md-6 mt-5">
-                    <input type="submit" class="btn btn-primary" value="Add Menu Item">
+                    <input type="submit" class="btn btn-primary" value="Add to menu">
                 </div>
             </div>
 
     </form>
+    </div>
     <form th:action="@{/showItems}" method="post">
         <input type="hidden" name="menu_id" th:value="${menu_id}" />
         <input type="submit" class="btn btn-primary" value="Submit Menu">
@@ -87,6 +107,5 @@
     </div>
 </div>
 
-</div>
 </body>
 </html>

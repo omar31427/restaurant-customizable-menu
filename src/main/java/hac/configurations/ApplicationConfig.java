@@ -1,5 +1,6 @@
 package hac.configurations;
 
+import hac.repo.CartItem;
 import hac.repo.MenuItem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +27,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class ApplicationConfig  {
     @Bean
     @SessionScope
-    public ArrayList<MenuItem> sessionBean() {
-        return new ArrayList<MenuItem>() ;
+    public ArrayList<CartItem> sessionBean() {
+        return new ArrayList<CartItem>() ;
     }
 
     @Bean
