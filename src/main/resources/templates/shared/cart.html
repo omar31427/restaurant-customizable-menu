@@ -10,7 +10,7 @@
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
         integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-</head>
+</head>;., ,..,
 <body>
 <div th:replace="~{components/navBar :: navBar}"></div>
 <table class="table table-striped table-responsive-md">
@@ -24,14 +24,28 @@
   <tbody th:object="${cartItems}">
   <tr th:each="cartItem: ${cartItems}">
     <td th:text="${cartItem.item.menuItemName}"></td>
-    <td th:text="${cartItem.amount}"></td>
+    <td th:text="${cartItem.item.menuItemPrice}"></td>
     <td>
       <div class="d-flex align-items-center">
         <form th:action="@{/admin/decreaseQuantity}" method="post">
           <input type="hidden" name="menuItem_id" th:value="${cartItem.item.item_id}"/>
           <button type="submit" class="btn btn-primary btn-sm">-</button>
         </form>
-        <span class="mx-2" th:text="${cartItem.amount}"></span>
+        <form th:action="@{/admin/setQuantity}"  method="post" onkeydown="submitOnEnter(event)">
+          <input type="hidden" name="menuItem_id" th:value="${cartItem.item.item_id}"/>
+          <input type="text" name = "amount" th:value="${cartItem.amount}"/>
+        </form>
+
+        <script>
+          function submitOnEnter(event) {
+            if (event.keyCode === 13) {
+              event.preventDefault(); // Prevent form submission
+              event.target.form.submit(); // Submit the form
+            }
+          }
+        </script>
+
+        <!--        -->
         <form th:action="@{/admin/increaseQuantity}" method="post">
           <input type="hidden" name="menuItem_id" th:value="${cartItem.item.item_id}"/>
           <button type="submit" class="btn btn-primary btn-sm">+</button>

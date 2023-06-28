@@ -45,6 +45,8 @@ public class RestaurantController {
     public String index(Model model) {
         System.out.println("hello");
         Menu menu = new Menu();
+        MenuItem menuItem = new MenuItem();
+        model.addAttribute("menuItem",menuItem);
         model.addAttribute("menuItems",menu.getMenuItems());
         model.addAttribute("greeting","domo arigato mr.robot!");
         model.addAttribute("menu", menu);
@@ -84,11 +86,15 @@ public class RestaurantController {
         return "redirect:/";
     }
     @PostMapping("/shared/cart")
-    public String openCart(Model model){
-
+    public String openCart(@Valid CartItem cartItem, BindingResult itemResult,
+                           Model model){
+        if(itemResult.hasErrors())
+        {
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }
         try {
-            model.addAttribute("item",new MenuItem());
-            model.addAttribute("amount",0);
+
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e) {
@@ -99,20 +105,31 @@ public class RestaurantController {
     }
     @PostMapping("/admin/decreaseQuantity")
     public String decreaseCartItem(@RequestParam("menuItem_id") Long menuItem_id,
+                                   @Valid CartItem cartItem, BindingResult itemResult,
                                    Model model){
-        try{
-            for (CartItem cartItem : cartItems)
-                System.out.println("item id: " + cartItem.getItem().getItem_id());
-
-            System.out.println("returned item id: " + menuItem_id);
-            for(CartItem cartItem:cartItems)
-            {
-                if(cartItem.getItem().getItem_id() == menuItem_id)
-                   cartItem.decreaseAmount();
-            }
-
+        if(itemResult.hasErrors())
+        {
+            System.out.println("error in amount");
+            model.addAttribute("cartItem", cartItem);
             model.addAttribute("item",new MenuItem());
             model.addAttribute("amount",0);
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }
+        try{
+            for(CartItem item:cartItems)
+                if(item.getItem().getItem_id() == menuItem_id) {
+                    cartItem = item;
+                    break;
+                }
+            if(cartItem.getAmount() < 1)
+                cartItem.setAmount(0);
+            else
+                cartItem.decreaseAmount();
+
+            model.addAttribute("cartItem", cartItem);
+            model.addAttribute("item",cartItem.getItem());
+            model.addAttribute("menuItem_id",cartItem.getItem().getItem_id());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e){
@@ -123,22 +140,53 @@ public class RestaurantController {
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
+    @GetMapping("/search")
+    public String search(@RequestParam("menuItemName") String menuItemName,
+                         Model model)
+    {
+        System.out.println("we are in search in controller");
+        try{
+            System.out.println("we are in search in controller");
+            List<MenuItem> searchResult = menuItemService.getItemsContaining(menuItemName);
+            System.out.println("size of search result = " + searchResult.size());
+
+            model.addAttribute("menuItems",searchResult);
+            ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
+
+            model.addAttribute("menus",menus);
+            return "index";
+        }   catch(Exception e){
+            System.out.println("problem in search: " + e.getMessage());
+        }
+        return "index";
+    }
     @PostMapping("/admin/increaseQuantity")
     public String increaseCartItem(@RequestParam("menuItem_id") Long menuItem_id,
+                                   @Valid CartItem cartItem, BindingResult itemResult,
                                    Model model){
-        try{
-            for (CartItem cartItem : cartItems)
-                System.out.println("item id: " + cartItem.getItem().getItem_id());
-
-            System.out.println("returned item id: " + menuItem_id);
-            for(CartItem cartItem:cartItems)
-            {
-                if(cartItem.getItem().getItem_id() == menuItem_id)
-                    cartItem.increaseAmount();
-            }
-
+        if(itemResult.hasErrors())
+        {
+            System.out.println("error in amount");
+            model.addAttribute("cartItem", cartItem);
             model.addAttribute("item",new MenuItem());
             model.addAttribute("amount",0);
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }
+        try{
+            for(CartItem item:cartItems)
+                if(item.getItem().getItem_id() == menuItem_id) {
+                    cartItem = item;
+                    break;
+                }
+            if(cartItem.getAmount() >99)
+                cartItem.setAmount(100);
+            else
+                cartItem.increaseAmount();
+
+            model.addAttribute("cartItem", cartItem);
+            model.addAttribute("item",cartItem.getItem());
+            model.addAttribute("menuItem_id",cartItem.getItem().getItem_id());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e){
@@ -146,6 +194,32 @@ public class RestaurantController {
         }
         model.addAttribute("item",new MenuItem());
         model.addAttribute("amount",0);
+        model.addAttribute("cartItems",cartItems);
+        return "shared/cart";
+    }
+    @PostMapping("/admin/setQuantity")
+    public String setCartItemAmt(@RequestParam("menuItem_id") Long menuItem_id,
+                                 @RequestParam("amount") Integer amount,
+                                   Model model){
+        try{
+
+            for(CartItem item:cartItems)
+                if(item.getItem().getItem_id() == menuItem_id) {
+                    if(item.getAmount() > 99)
+                        item.setAmount(100);
+                    else if(item.getAmount() < 1)
+                        item.setAmount(0);
+                    else
+                        item.setAmount(amount);
+
+                    break;
+                }
+
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }catch(Exception e){
+            System.out.println("messge in remove from cart" + e.getMessage());
+        }
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
@@ -161,7 +235,6 @@ public class RestaurantController {
             cartItems.removeIf(cartItem -> cartItem.getItem().getItem_id() == menuItem_id);
 
             model.addAttribute("item",new MenuItem());
-            model.addAttribute("amount",0);
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e){
@@ -232,6 +305,7 @@ public class RestaurantController {
             model.addAttribute("menus",menus);
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id",menu_id);
+            model.addAttribute("menuItem", new MenuItem());
             model.addAttribute("greeting", "item successfully added");
             return "index";
         }catch (Exception e){

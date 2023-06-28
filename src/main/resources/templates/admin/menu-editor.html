@@ -38,8 +38,8 @@
             <div class="row">
                 <div class="form-group col-md-6" th:object="${menu}">
 
-                    <label for="menuName" class="col-form-label">Menu name</label>
-                    <input type="text" th:field="*{menuName}" class="form-control" id="menuName"
+                    <label for="menu name" class="col-form-label">Menu name</label>
+                    <input type="text" th:field="*{menuName}" class="form-control" id="menu name"
                            placeholder="Menu name">
                     <input type="hidden" name="menu_id" th:value="${menu_id}" />
                     <span th:if="${#fields.hasErrors('menuName')}" th:errors="*{menuName}"

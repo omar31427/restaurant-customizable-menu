@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem,Long> {
     List<MenuItem> findByMenuItemPriceLessThan (double price);
+    List<MenuItem> findMenuItemByMenuItemNameContainingIgnoreCase(String name);
    //List<MenuItem> findMenuItemByMenu(Menu menu);
      //List<MenuItem> findByIngredientsContaining (Ingredient ingredients);
 }

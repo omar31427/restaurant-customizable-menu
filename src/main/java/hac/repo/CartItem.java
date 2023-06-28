@@ -1,5 +1,7 @@
 package hac.repo;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ public class CartItem implements Serializable {
     private MenuItem item;
     @Setter
     @Getter
-    private int amount;
+    @Max(100)
+    @PositiveOrZero(message = "Price has to be more than or equal to 0.00")
+    private int amount =0;
 
     public CartItem ()
     {

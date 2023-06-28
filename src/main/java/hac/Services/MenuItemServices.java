@@ -33,7 +33,9 @@ public class MenuItemServices{
     public void deleteMenuItem(long id) {
         repository.deleteById(id);
     }
-
+    public List<MenuItem> getItemsContaining (String name){
+        return repository.findMenuItemByMenuItemNameContainingIgnoreCase(name);
+    }
     public void updateMenuItem(MenuItem menuItem) {
         repository.save(menuItem);
     }

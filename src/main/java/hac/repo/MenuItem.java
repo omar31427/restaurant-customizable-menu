@@ -24,7 +24,7 @@ public class MenuItem implements Serializable{
     private long item_id;
     @Getter
     @Setter
-    @Max(100)
+    @Max(200)
     @PositiveOrZero(message = "Price has to be more than or equal to 0.00")
     private double menuItemPrice;
     @Getter
