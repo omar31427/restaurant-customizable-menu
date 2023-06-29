@@ -57,7 +57,7 @@ public class ApplicationConfig  {
                 .cors(withDefaults())
                 .csrf(withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/css/**","/search","/*", "/", "/index","/403","/showItems","/openMenu").permitAll()
+                        .requestMatchers("/style/**","/search","/*", "/", "/index","/403","/showItems","/openMenu").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/shared/**").hasAnyRole("USER", "ADMIN")
                 )

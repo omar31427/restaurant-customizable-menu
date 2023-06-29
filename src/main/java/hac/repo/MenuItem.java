@@ -40,7 +40,7 @@ public class MenuItem implements Serializable{
     @ManyToMany(fetch = FetchType.EAGER)
     @Getter
     @Setter
-    private List<Ingredient> ingredients ;
+    private List<Ingredient> ingredients = new ArrayList<>();
 
 
    @ManyToOne(fetch = FetchType.EAGER)
