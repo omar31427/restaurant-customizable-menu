@@ -17,14 +17,15 @@
   <thead>
   <tr>
     <th>Name</th>
-    <th>Price</th>
+    <th>total Price</th>
     <th>Image path</th>
   </tr>
   </thead>
   <tbody th:object="${cartItems}">
   <tr th:each="cartItem: ${cartItems}">
     <td th:text="${cartItem.item.menuItemName}"></td>
-    <td th:text="${cartItem.item.menuItemPrice}"></td>
+    <td th:text="${cartItem.item.menuItemPrice * cartItem.amount}"></td>
+    <td th:text="${cartItem.item.menuItemImagePath}"></td>
     <td>
       <div class="d-flex align-items-center">
         <form th:action="@{/admin/decreaseQuantity}" method="post">

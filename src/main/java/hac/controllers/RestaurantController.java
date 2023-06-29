@@ -55,7 +55,7 @@ public class RestaurantController {
         return "index";
     }
     @GetMapping("/openMenu")
-    public String getMenuItems(@RequestParam("menuId") Long menuId, Model model) {
+    public String getMenuItems(@RequestParam("menuId") long menuId, Model model) {
         // Retrieve the menu items based on the menuId
         Menu menu = menuService.getMenu(menuId).get();
         List<MenuItem> menuItems = menuService.getMenuItemsByMenu(menu);
@@ -69,7 +69,7 @@ public class RestaurantController {
         return "index"; // Thymeleaf template to display the menu items
     }
     @GetMapping("/shared/addToCart")
-    public String addToCart(@RequestParam("itemId") Long itemId) {
+    public String addToCart(@RequestParam("itemId") long itemId) {
         MenuItem newItem = menuItemService.getMenuItem(itemId).get();
         boolean itemFound = false;
         for (CartItem cartItem : cartItems) {
@@ -104,7 +104,7 @@ public class RestaurantController {
         return "shared/cart";
     }
     @PostMapping("/admin/decreaseQuantity")
-    public String decreaseCartItem(@RequestParam("menuItem_id") Long menuItem_id,
+    public String decreaseCartItem(@RequestParam("menuItem_id") long menuItem_id,
                                    @Valid CartItem cartItem, BindingResult itemResult,
                                    Model model){
         if(itemResult.hasErrors())
@@ -142,14 +142,20 @@ public class RestaurantController {
     }
     @GetMapping("/searchByName")
     public String searchByName(@RequestParam("menuItemName") String menuItemName,
-                         Model model)
+                               @RequestParam(value = "vegan", required = false) boolean vegan,
+                               @RequestParam(value = "vegetarian", required = false) boolean vegetarian,
+                               Model model)
     {
 
         try{
 
-            List<MenuItem> searchResult = menuItemService.getItemsContaining(menuItemName);
-            System.out.println("name of menu item as  recieved in controller: " + menuItemName);
-            System.out.println("size of search result = " + searchResult.size());
+            List<MenuItem> searchResult = new ArrayList<>();
+            if(!vegan&&!vegetarian)
+                searchResult = menuItemService.getItemsContaining(menuItemName);
+            else
+                searchResult = menuItemService.getItemsByNameAndFilters(menuItemName,vegan,vegetarian);
+
+
             //model.addAttribute("ingredientName" , " ");
             model.addAttribute("menuItems",searchResult);
             ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
@@ -166,15 +172,23 @@ public class RestaurantController {
     }
     @PostMapping("/searchByIngredient")
     public String searchByIngredient(@RequestParam("ingredientName") String ingredientName,
-                         Model model)
+                                     @RequestParam(value = "vegan", required = false) boolean vegan,
+                                     @RequestParam(value = "vegetarian", required = false) boolean vegetarian,
+                                     Model model)
     {
 
         try{
             List<Ingredient> ingredients = ingredientService.getIngredientsByName(ingredientName);
 
             List<MenuItem> searchResult = new ArrayList<>();
-            for (Ingredient ing: ingredients)
-                searchResult.addAll(ing.getMenuItems());
+            if(!vegan&&!vegetarian)
+                for (Ingredient ing: ingredients)
+                    searchResult.addAll(ing.getMenuItems());
+            else{
+                for (Ingredient ing: ingredients)
+                    if(ing.isVegan() == vegan && ing.isVegetarian() == vegetarian)
+                        searchResult.addAll(ing.getMenuItems());
+            }
 
             System.out.println("searchByIngredient results size: " + searchResult.size());
          //   model.addAttribute("Ingredient", ingredientService.getIngredientsByName(ingredientName));
@@ -191,7 +205,7 @@ public class RestaurantController {
         return "index";
     }
     @PostMapping("/admin/increaseQuantity")
-    public String increaseCartItem(@RequestParam("menuItem_id") Long menuItem_id,
+    public String increaseCartItem(@RequestParam("menuItem_id") long menuItem_id,
                                    @Valid CartItem cartItem, BindingResult itemResult,
                                    Model model){
         if(itemResult.hasErrors())
@@ -228,7 +242,7 @@ public class RestaurantController {
         return "shared/cart";
     }
     @PostMapping("/admin/setQuantity")
-    public String setCartItemAmt(@RequestParam("menuItem_id") Long menuItem_id,
+    public String setCartItemAmt(@RequestParam("menuItem_id") long menuItem_id,
                                  @RequestParam("amount") Integer amount,
                                    Model model){
         try{
@@ -254,7 +268,7 @@ public class RestaurantController {
         return "shared/cart";
     }
     @PostMapping("/admin/removeFromCart")
-    public String removeFromCart(@RequestParam("menuItem_id") Long menuItem_id,
+    public String removeFromCart(@RequestParam("menuItem_id") long menuItem_id,
                                  Model model)
     {
         try{
@@ -305,8 +319,8 @@ public class RestaurantController {
         return "admin/menu-editor";
     }
     @PostMapping("/admin/deleteItem")
-    public String deleteItem(@RequestParam("menuItem_id") Long menuItem_id,
-                             @RequestParam("menu_id") Long menu_id,
+    public String deleteItem(@RequestParam("menuItem_id") long menuItem_id,
+                             @RequestParam("menu_id") long menu_id,
                              Model model){
         try{
             Menu menu = menuService.getMenu((menu_id)).get();
@@ -325,7 +339,7 @@ public class RestaurantController {
         return "admin/menu-editor";
     }
     @PostMapping("/showItems")
-    public String indexPost(@RequestParam("menu_id") Long menu_id,
+    public String indexPost(@RequestParam("menu_id") long menu_id,
                             Model model , Principal principal){
 
         try{
@@ -362,33 +376,7 @@ public class RestaurantController {
         model.addAttribute("menu_id", menu.getMenu_id());
         return "admin/menu-editor";
     }
-    /*@PostMapping("/admin/addIngredient")
-    public String addIngredient(@RequestParam("item_id") long itemId,
-                                @RequestParam("ingredients") ArrayList<Ingredient> ingredients,
-                                Model model) {
 
-        Optional<MenuItem> optionalMenuItem = menuItemService.getMenuItem(itemId);
-        if (optionalMenuItem.isPresent()) {
-            MenuItem menuItem = optionalMenuItem.get();
-            for(Ingredient ing: menuItem.getIngredients())
-                System.out.println("ingredient name: " + ing.getIngredientName());
-
-            Ingredient newIngredient = new Ingredient("", false, false);
-            newIngredient.addMenuItem(menuItem);
-            ingredientService.saveIngredient(newIngredient);
-            ingredients.add(newIngredient);
-            //menuItem.addIngredient(newIngredient);
-            menuItem.setIngredients(ingredients);
-            Menu menu = menuItem.getMenu();
-            menuItemService.saveMenuItem(menuItem);
-            System.out.println("newIngredientname: " + newIngredient.getIngredientName());
-            model.addAttribute("menu", menuItem.getMenu());
-            model.addAttribute("menuItem", menuItem);
-            model.addAttribute("ingredients", menuItem.getIngredients());
-            model.addAttribute("menu_id", menu.getMenu_id());
-        }
-        return "admin/menu-editor";
-    }*/
     @PostMapping("/admin/addIngredient")
     public String addIngredient(@RequestParam("menuItem_id") long itemId,
                                 @ModelAttribute("newIngredient") Ingredient newIngredient,
@@ -399,6 +387,7 @@ public class RestaurantController {
             newIngredient.addMenuItem(menuItem);
             ingredientService.saveIngredient(newIngredient);
             menuItem.addIngredient(newIngredient);
+            menuItem.setFilters();
             menuItemService.saveMenuItem(menuItem);
             for (Ingredient ing : menuItem.getIngredients())
                 System.out.println("ingredient name: " + ing.getIngredientName());
@@ -418,7 +407,7 @@ public class RestaurantController {
     @PostMapping("/admin/validateMenuItem")
     public String BuildMenuItem(@Valid MenuItem menuItem,BindingResult itemResult,
                                 @Valid Menu menu, BindingResult menuResult,
-                                @RequestParam("menu_id") Long menu_id, BindingResult menuIdResult,
+                                @RequestParam("menu_id") long menu_id, BindingResult menuIdResult,
                                 Model model)
     {
 

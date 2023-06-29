@@ -39,6 +39,9 @@ public class MenuItemServices{
     public List<MenuItem> getItemsContainingIngredient(Ingredient ingredient){
         return repository.findMenuItemByIngredientsContainingIgnoreCase(ingredient);
     }
+    public List<MenuItem> getItemsByNameAndFilters(String name, boolean vegan, boolean vegetarian){
+        return repository.findMenuItemByMenuItemNameContainingIgnoreCaseAndVeganAndVegetarian(name,vegan,vegetarian);
+    }
     public void updateMenuItem(MenuItem menuItem) {
         repository.save(menuItem);
     }

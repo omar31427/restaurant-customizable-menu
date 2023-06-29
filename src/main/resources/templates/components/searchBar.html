@@ -1,13 +1,24 @@
 <div>
-    <form th:action="@{/searchByName}" th:fragment = "searchBar" method="get">
-        <input type="text" name="menuItemName" value = "" placeholder="Find your meal" size="50">
+    <form th:action="@{/searchByIngredient}" th:fragment="searchByIngredient" method="post">
+        <input type="text" name="ingredientName" value="" placeholder="Find meals with your favorite ingredient" size="50">
+        <label for="veganCheckbox">
+            <input type="checkbox" id="veganIng" name="vegan" value="true"> Vegan
+        </label>
+        <label for="vegetarianCheckbox">
+            <input type="checkbox" id="vegetarianIng" name="vegetarian" value="true"> Vegetarian
+        </label>
         <input type="submit" class="btn btn-primary" value="Search">
     </form>
 </div>
 <div>
-    <form th:action="@{/searchByIngredient}" th:fragment = "searchByIngredient" method="post">
-        <input type="text" name="ingredientName" value = "" placeholder="Find meals with your favorite ingredient"
-               size="50">
+    <form th:action="@{/searchByName}" th:fragment="searchBar" method="get">
+        <input type="text" name="menuItemName" value="" placeholder="Find your meal" size="50">
+        <label for="veganCheckbox">
+            <input type="checkbox" id="veganCheckbox" name="vegan" value="true"> Vegan
+        </label>
+        <label for="vegetarianCheckbox">
+            <input type="checkbox" id="vegetarianCheckbox" name="vegetarian" value="true"> Vegetarian
+        </label>
         <input type="submit" class="btn btn-primary" value="Search">
     </form>
 </div>

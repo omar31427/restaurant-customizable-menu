@@ -11,6 +11,8 @@ public interface MenuItemRepository extends JpaRepository<MenuItem,Long> {
     List<MenuItem> findByMenuItemPriceLessThan (double price);
     List<MenuItem> findMenuItemByMenuItemNameContainingIgnoreCase(String name);
     List<MenuItem> findMenuItemByIngredientsContainingIgnoreCase(Ingredient ingredient);
-   //List<MenuItem> findMenuItemByMenu(Menu menu);
+    List<MenuItem> findMenuItemByMenuItemNameContainingIgnoreCaseAndVeganAndVegetarian(String name, boolean vegan,boolean vegetarian);
+
+    //List<MenuItem> findMenuItemByMenu(Menu menu);
      //List<MenuItem> findByIngredientsContaining (Ingredient ingredients);
 }

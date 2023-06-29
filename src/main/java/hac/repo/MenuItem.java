@@ -9,6 +9,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.relational.core.mapping.Table;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,8 @@ public class MenuItem implements Serializable{
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(insertable = false, updatable = false)
     private long item_id;
+    @Serial
+    private static final long serialVersionUID = 2637833444727181844L;
     @Getter
     @Setter
     @Max(200)
@@ -47,7 +51,12 @@ public class MenuItem implements Serializable{
     @Getter
     @Setter
     private String menuItemImagePath = "";
-
+    @Getter
+    @Setter
+    private boolean vegan;
+    @Getter
+    @Setter
+    private boolean vegetarian;
     public MenuItem(){
 
     }
@@ -78,7 +87,16 @@ public class MenuItem implements Serializable{
         }
         this.ingredients.add(ingredient);
     }
-
+    public void setFilters(){
+        if(this.ingredients.isEmpty())
+        {
+            this.vegan = false;
+            this.vegetarian = false;
+            return;
+        }
+        this.vegan = isVegan();
+        this.vegetarian = isVegetarian();
+    }
     public boolean isVegan(){
         for(Ingredient ingredient : this.ingredients)
             if(!ingredient.isVegan())
