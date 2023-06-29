@@ -165,6 +165,12 @@ public class RestaurantController {
         model.addAttribute("cartItems", cartItems);
         return "shared/cart";
     }
+    @PostMapping("/admin/globalPurchaseHistory")
+    public String globaPurchaseHistory (Model model)
+    {
+        model.addAttribute("purchases",purchaseService.getAllPurchases());
+        return "success";
+    }
     @PostMapping("/shared/purchaseHistory")
     public String purchaseHistory(Principal principal, Model model)
     {
@@ -343,6 +349,7 @@ public class RestaurantController {
                            Principal principal,
                            Model model)
     {
+        System.out.println("nnnnnnnnnnnnnnnn");
         MenuItem menuItem = menuItemService.getMenuItem(itemId).get();
         CartItem item = new CartItem();
          for(CartItem cItem : cartItems)
@@ -351,11 +358,12 @@ public class RestaurantController {
                  item = cItem;
                  break;
              }
+
         System.out.println("user details: " + ((UserDetails) principal).getUsername());
 
         Purchase purchase = new Purchase(((UserDetails) principal).getUsername()
                 ,menuItem.getMenuItemPrice()*item.getAmount(),menuItem );
-
+        System.out.println("item price: "+ purchase.getPayment());
         model.addAttribute("purchase",purchase);
         model.addAttribute("userName",name);
         model.addAttribute("menuItem_id",itemId);

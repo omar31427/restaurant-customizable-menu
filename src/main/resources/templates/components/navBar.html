@@ -1,35 +1,34 @@
-<div class="navbar navbar-inverse navbar-fixed-top" th:fragment="navBar" xmlns:sec="http://www.w3.org/1999/xhtml">
-  <div class="container">
+<nav class="navbar navbar-expand-lg bg-light fixed-top mb-5" th:fragment="navBar" xmlns:sec="http://www.w3.org/1999/xhtml">
+  <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#"> MunchBox</a>
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+      <a class="navbar-brand" href="#">MunchBox</a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
       </button>
-
     </div>
-    <div >
-      <ul classname="nav navbar-nav navbar-center">
-        <li sec:authorize="hasRole('ROLE_ADMIN')">
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <a  class="nav-link" sec:authorize="hasRole('ROLE_ADMIN')">
           <form th:action="@{/admin/menu-editor}" method="get">
-            <input type = "submit" value = "menu-editor"/>
+            <input type="submit" value="menu-editor"/>
           </form>
-        </li>
-        <li sec:authorize="isAuthenticated()">
+        </a>
+        <a sec:authorize="isAuthenticated()">
           <form th:action="@{/shared/cart}" method="post">
-            <input type = "submit" value = "cart"/>
+            <input type="submit" value="cart"/>
           </form>
-        </li>
-        <li sec:authorize="isAuthenticated()">
+        </a>
+        <a sec:authorize="isAuthenticated()">
           <form th:action="@{/shared/purchaseHistory}" method="post">
-            <input type = "submit" value = "Purchase History"/>
+            <input type="submit" value="Purchase History"/>
           </form>
-        </li>
-      </ul>
-
+        </a>
+        <a sec:authorize="hasRole('ROLE_ADMIN')">
+          <form th:action="@{/admin/globalPurchaseHistory}" method="post">
+            <input type="submit" value="Global Purchase History"/>
+          </form>
+        </a>
       <ul class="nav navbar-nav navbar-right">
-        <!--login buttton if no user is in session-->
+        <!--login button if no user is in session-->
         <li th:if="${#authorization.expression('!isAuthenticated()')}">
           <a href="/signin" th:href="@{/login}">
             <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Sign in
@@ -37,7 +36,7 @@
         </li>
         <!--logout button when user is in session-->
         <li th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">|
-          <!--/* When using CSRF this needs to be a POST */-->
+          <!--/* When using CSRF, this needs to be a POST */-->
           <form th:action="@{/logout}" method="post" style="display:inline">
             <input type="submit" value="Logout"/>
           </form>
@@ -45,6 +44,4 @@
       </ul>
     </div>
   </div>
-</div>
-
-
+</nav>
