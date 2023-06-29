@@ -1,10 +1,11 @@
 <div>
-    <form th:action="@{/search}" th:fragment = "searchBar" method="get">
+    <form th:action="@{/searchByName}" th:fragment = "searchBar" method="get">
         <input type="text" name="menuItemName" value = "" placeholder="Find your meal" size="50">
         <input type="submit" class="btn btn-primary" value="Search">
     </form>
-
-    <form th:action="@{/searchByIngredient}" th:fragment = "searchByIngredient" method="get">
+</div>
+<div>
+    <form th:action="@{/searchByIngredient}" th:fragment = "searchByIngredient" method="post">
         <input type="text" name="ingredientName" value = "" placeholder="Find meals with your favorite ingredient"
                size="50">
         <input type="submit" class="btn btn-primary" value="Search">

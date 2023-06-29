@@ -140,8 +140,8 @@ public class RestaurantController {
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
-    @GetMapping("/search")
-    public String search(@RequestParam("menuItemName") String menuItemName,
+    @GetMapping("/searchByName")
+    public String searchByName(@RequestParam("menuItemName") String menuItemName,
                          Model model)
     {
 
@@ -150,34 +150,43 @@ public class RestaurantController {
             List<MenuItem> searchResult = menuItemService.getItemsContaining(menuItemName);
             System.out.println("name of menu item as  recieved in controller: " + menuItemName);
             System.out.println("size of search result = " + searchResult.size());
-            model.addAttribute("ingredientName" , " ");
+            //model.addAttribute("ingredientName" , " ");
             model.addAttribute("menuItems",searchResult);
             ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
             model.addAttribute("menuItemName",menuItemName);
             model.addAttribute("menus",menus);
             return "index";
         }   catch(Exception e){
-            System.out.println("problem in search: " + e.getMessage());
+            System.out.println("problem in search by name: " + e.getMessage());
         }
+        ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
+        model.addAttribute("menus",menus);
+        model.addAttribute("menuItems",new ArrayList<MenuItem>());
         return "index";
     }
-    @GetMapping("/searchByIngredient")
+    @PostMapping("/searchByIngredient")
     public String searchByIngredient(@RequestParam("ingredientName") String ingredientName,
                          Model model)
     {
 
         try{
+            List<Ingredient> ingredients = ingredientService.getIngredientsByName(ingredientName);
 
-            List<MenuItem> searchResult = menuItemService.getItemsContainingIngredient(ingredientName);
+            List<MenuItem> searchResult = new ArrayList<>();
+            for (Ingredient ing: ingredients)
+                searchResult.addAll(ing.getMenuItems());
 
+            System.out.println("searchByIngredient results size: " + searchResult.size());
+         //   model.addAttribute("Ingredient", ingredientService.getIngredientsByName(ingredientName));
             model.addAttribute("menuItems",searchResult);
-            model.addAttribute("ingredientName" , ingredientName);
+        //    model.addAttribute("ingredientName" , ingredientName);
             ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
-            model.addAttribute("menuItemName", " ");
+            System.out.println("size of retrieved menus: " + menus.size());
+            //model.addAttribute("menuItemName", " ");
             model.addAttribute("menus",menus);
             return "index";
         }   catch(Exception e){
-            System.out.println("problem in search: " + e.getMessage());
+            System.out.println("problem in search by ingredient: " + e.getMessage());
         }
         return "index";
     }

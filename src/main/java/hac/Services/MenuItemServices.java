@@ -36,8 +36,8 @@ public class MenuItemServices{
     public List<MenuItem> getItemsContaining (String name){
         return repository.findMenuItemByMenuItemNameContainingIgnoreCase(name);
     }
-    public List<MenuItem> getItemsContainingIngredient(String ingredientName){
-        return repository.findMenuItemByIngredientsContainingIgnoreCase(ingredientName);
+    public List<MenuItem> getItemsContainingIngredient(Ingredient ingredient){
+        return repository.findMenuItemByIngredientsContainingIgnoreCase(ingredient);
     }
     public void updateMenuItem(MenuItem menuItem) {
         repository.save(menuItem);

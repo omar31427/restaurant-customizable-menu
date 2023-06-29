@@ -10,7 +10,7 @@ import java.util.List;
 public interface MenuItemRepository extends JpaRepository<MenuItem,Long> {
     List<MenuItem> findByMenuItemPriceLessThan (double price);
     List<MenuItem> findMenuItemByMenuItemNameContainingIgnoreCase(String name);
-    List<MenuItem> findMenuItemByIngredientsContainingIgnoreCase(String ingredientName);
+    List<MenuItem> findMenuItemByIngredientsContainingIgnoreCase(Ingredient ingredient);
    //List<MenuItem> findMenuItemByMenu(Menu menu);
      //List<MenuItem> findByIngredientsContaining (Ingredient ingredients);
 }

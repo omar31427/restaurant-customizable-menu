@@ -79,4 +79,19 @@ public class MenuItem implements Serializable{
         this.ingredients.add(ingredient);
     }
 
+    public boolean isVegan(){
+        for(Ingredient ingredient : this.ingredients)
+            if(!ingredient.isVegan())
+                return false;
+
+        return true;
+    }
+    public boolean isVegetarian(){
+        for(Ingredient ingredient : this.ingredients)
+            if(!ingredient.isVegetarian())
+                return false;
+
+        return true;
+    }
+
 }
