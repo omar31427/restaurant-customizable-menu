@@ -16,7 +16,7 @@ import java.util.Optional;
 @Transactional
 @Service
 public class IngredientServices{
-    @Qualifier("IngredientRepository")
+    @Autowired
     private IngredientRepository repository;
     public void addIngredient(ArrayList<Ingredient> Ingredients) {
         repository.saveAll(Ingredients);
@@ -34,10 +34,10 @@ public class IngredientServices{
         return repository.findById(id);
     }
     public List<Ingredient> getIngredientsByVegan(boolean vegan){
-        return repository.findByIsVegan(vegan);
+        return repository.findIngredientByVegan(vegan);
     }
     public List<Ingredient> getIngredientsByVegetarian(boolean vegetarian){
-        return repository.findByIsVegetarian(vegetarian);
+        return repository.findIngredientByVegetarian(vegetarian);
     }
     public List<Ingredient> getIngredientsByName(String name){
         return repository.findByIngredientName(name);

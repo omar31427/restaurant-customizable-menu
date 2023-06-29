@@ -17,6 +17,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /** this is a test controller, delete/replace it when you start working on your project */
@@ -30,8 +31,7 @@ public class RestaurantController {
     private MenuItemServices menuItemService;
     @Autowired
     private MenuServices menuService;
-    @Autowired
-    private MenuRepository menuRepo;
+
     @Resource(name = "sessionBean")
     private ArrayList<CartItem> cartItems;
 
@@ -144,15 +144,36 @@ public class RestaurantController {
     public String search(@RequestParam("menuItemName") String menuItemName,
                          Model model)
     {
-        System.out.println("we are in search in controller");
-        try{
-            System.out.println("we are in search in controller");
-            List<MenuItem> searchResult = menuItemService.getItemsContaining(menuItemName);
-            System.out.println("size of search result = " + searchResult.size());
 
+        try{
+
+            List<MenuItem> searchResult = menuItemService.getItemsContaining(menuItemName);
+            System.out.println("name of menu item as  recieved in controller: " + menuItemName);
+            System.out.println("size of search result = " + searchResult.size());
+            model.addAttribute("ingredientName" , " ");
             model.addAttribute("menuItems",searchResult);
             ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
+            model.addAttribute("menuItemName",menuItemName);
+            model.addAttribute("menus",menus);
+            return "index";
+        }   catch(Exception e){
+            System.out.println("problem in search: " + e.getMessage());
+        }
+        return "index";
+    }
+    @GetMapping("/searchByIngredient")
+    public String searchByIngredient(@RequestParam("ingredientName") String ingredientName,
+                         Model model)
+    {
 
+        try{
+
+            List<MenuItem> searchResult = menuItemService.getItemsContainingIngredient(ingredientName);
+
+            model.addAttribute("menuItems",searchResult);
+            model.addAttribute("ingredientName" , ingredientName);
+            ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
+            model.addAttribute("menuItemName", " ");
             model.addAttribute("menus",menus);
             return "index";
         }   catch(Exception e){
@@ -266,6 +287,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",new MenuItem());
+            model.addAttribute("newIngredient", new Ingredient());
             return "admin/menu-editor";
         }catch(Exception e){
             System.out.println("error in admin/editMenu" + e.getMessage());
@@ -285,6 +307,7 @@ public class RestaurantController {
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem",new MenuItem());
+            model.addAttribute("newIngredient", new Ingredient());
             return "admin/menu-editor";
         }catch(Exception e){
             System.out.println("problem in delete item post: " + e.getMessage());
@@ -324,9 +347,62 @@ public class RestaurantController {
         Menu menu = new Menu();
         MenuItem item = new MenuItem();
         menu.addItem(item);
+        model.addAttribute("newIngredient", new Ingredient());
         model.addAttribute("menu", menu);
         model.addAttribute("menuItem",item);
         model.addAttribute("menu_id", menu.getMenu_id());
+        return "admin/menu-editor";
+    }
+    /*@PostMapping("/admin/addIngredient")
+    public String addIngredient(@RequestParam("item_id") long itemId,
+                                @RequestParam("ingredients") ArrayList<Ingredient> ingredients,
+                                Model model) {
+
+        Optional<MenuItem> optionalMenuItem = menuItemService.getMenuItem(itemId);
+        if (optionalMenuItem.isPresent()) {
+            MenuItem menuItem = optionalMenuItem.get();
+            for(Ingredient ing: menuItem.getIngredients())
+                System.out.println("ingredient name: " + ing.getIngredientName());
+
+            Ingredient newIngredient = new Ingredient("", false, false);
+            newIngredient.addMenuItem(menuItem);
+            ingredientService.saveIngredient(newIngredient);
+            ingredients.add(newIngredient);
+            //menuItem.addIngredient(newIngredient);
+            menuItem.setIngredients(ingredients);
+            Menu menu = menuItem.getMenu();
+            menuItemService.saveMenuItem(menuItem);
+            System.out.println("newIngredientname: " + newIngredient.getIngredientName());
+            model.addAttribute("menu", menuItem.getMenu());
+            model.addAttribute("menuItem", menuItem);
+            model.addAttribute("ingredients", menuItem.getIngredients());
+            model.addAttribute("menu_id", menu.getMenu_id());
+        }
+        return "admin/menu-editor";
+    }*/
+    @PostMapping("/admin/addIngredient")
+    public String addIngredient(@RequestParam("menuItem_id") long itemId,
+                                @ModelAttribute("newIngredient") Ingredient newIngredient,
+                                Model model) {
+
+        MenuItem menuItem = menuItemService.getMenuItem(itemId).orElse(new MenuItem());
+        if(!menuItem.hasIngredient(newIngredient)) {
+            newIngredient.addMenuItem(menuItem);
+            ingredientService.saveIngredient(newIngredient);
+            menuItem.addIngredient(newIngredient);
+            menuItemService.saveMenuItem(menuItem);
+            for (Ingredient ing : menuItem.getIngredients())
+                System.out.println("ingredient name: " + ing.getIngredientName());
+            System.out.println("menuItem name: " + menuItem.getMenuItemName());
+        }else {
+            System.out.println("ingredient already found in item");
+        }
+
+        model.addAttribute("menu", menuItem.getMenu());
+        model.addAttribute("menuItem", menuItem);
+        model.addAttribute("ingredients", menuItem.getIngredients());
+        model.addAttribute("menu_id", menuItem.getMenu().getMenu_id());
+
         return "admin/menu-editor";
     }
 
@@ -385,6 +461,7 @@ public class RestaurantController {
                 menuService.saveMenu(menu);
 
             System.out.println("saved to menu: " + menu.getMenu_id());
+            model.addAttribute("newIngredient", new Ingredient());
             model.addAttribute("menu", menu);
             model.addAttribute("menu_id", menu.getMenu_id());
             model.addAttribute("menuItem", menuItem);

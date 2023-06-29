@@ -10,7 +10,9 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.relational.core.mapping.Table;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -31,11 +33,11 @@ public class MenuItem implements Serializable{
     @Setter
     @NotEmpty
     private String menuItemName;
-   /* @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Getter
     @Setter
     private List<Ingredient> ingredients ;
-    */
+
 
    @ManyToOne(fetch = FetchType.EAGER)
    @JoinColumn(name = "menu_id")
@@ -62,6 +64,19 @@ public class MenuItem implements Serializable{
         this.menuItemName = name;
         this.menuItemImagePath = imagePath;
         this.menuItemPrice = price;
+    }
+    public boolean hasIngredient(Ingredient ingredient){
+        for(Ingredient ing: this.ingredients)
+            if(Objects.equals(ing.getIngredientName(), ingredient.getIngredientName()))
+                return true;
+
+        return false;
+    }
+    public void addIngredient (Ingredient ingredient){
+        if (ingredients == null) {
+            ingredients = new ArrayList<>();
+        }
+        this.ingredients.add(ingredient);
     }
 
 }

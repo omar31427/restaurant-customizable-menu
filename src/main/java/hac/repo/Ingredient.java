@@ -4,23 +4,39 @@ package hac.repo;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.data.relational.core.mapping.Table;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table("Ingredient")
 public class Ingredient implements Serializable{
     @Id
+    @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long ingredientId;
+    private long ingredient_id;
 
+    @ManyToMany(mappedBy = "ingredients")
+    @Getter
+    @Setter
+    private List<MenuItem> menuItems;
 
-    @NotEmpty
+    @Getter
+    @Setter
     private String ingredientName;
+    @Getter
+    @Setter
     @NotNull
-    private boolean isVegan;
+    private boolean vegan = false;
+    @Getter
+    @Setter
     @NotNull
-    private boolean isVegetarian;
+    private boolean vegetarian = false;
 
     public Ingredient(){
 
@@ -28,36 +44,14 @@ public class Ingredient implements Serializable{
 
     public Ingredient(String name, boolean vegan, boolean vegetarian){
         this.ingredientName = name;
-        this.isVegan = vegan;
-        this.isVegetarian = vegetarian;
-    }
-    public long getIngredientId(){
-        return ingredientId;
+        this.vegan = vegan;
+        this.vegetarian = vegetarian;
     }
 
-    public void setIngredientId(long id){
-        this.ingredientId = id;
-    }
-    public String getIngredientName() {
-        return ingredientName;
-    }
-    public void setIngredientName(String newName){
-        this.ingredientName = newName;
-    }
-
-    public boolean getIsVegan(){
-        return isVegan;
-    }
-
-    public void setIsVegan(boolean vegan){
-        this.isVegan = vegan;
-    }
-
-    public boolean getIsVegetarian(){
-        return this.isVegetarian;
-    }
-
-    public void setIsVegetarian(boolean vegetarian){
-        this.isVegetarian = vegetarian;
+    public void addMenuItem(MenuItem menuItem){
+        if (menuItems == null) {
+            menuItems = new ArrayList<>();
+        }
+        this.menuItems.add(menuItem);
     }
 }

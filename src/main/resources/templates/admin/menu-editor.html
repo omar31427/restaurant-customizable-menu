@@ -75,6 +75,31 @@
 
     </form>
     </div>
+    <!--------------------------------add ingredient form------------------------------------>
+    <th:block th:if="${menuItem.menuItemName}">
+    <form th:action="@{/admin/addIngredient}" th:object="${newIngredient}" method="post">
+        <input type="hidden" name="menuItem_id" th:value="${menuItem.item_id}" />
+
+        <!-- Ingredient Name -->
+        <label for="ingredientName" class="col-form-label">Ingredient name</label>
+        <input type="text" th:field="*{ingredientName}" class="form-control" id="ingredientName"
+               placeholder="Ingredient name">
+
+        <!-- Vegan Checkbox -->
+        <label>Vegan:</label>
+        <input type="checkbox" th:field="*{vegan}" />
+
+        <!-- Vegetarian Checkbox -->
+        <label>Vegetarian:</label>
+        <input type="checkbox" th:field="*{vegetarian}" />
+
+        <div class="col-md-6 mt-5">
+            <input type="submit" class="btn btn-primary" value="Add ingredient">
+        </div>
+    </form>
+    </th:block>
+
+
     <form th:action="@{/showItems}" method="post">
         <input type="hidden" name="menu_id" th:value="${menu_id}" />
         <input type="submit" class="btn btn-primary" value="Submit Menu">
