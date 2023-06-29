@@ -9,6 +9,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,99 +72,13 @@ public class RestaurantController {
 
         return "index"; // Thymeleaf template to display the menu items
     }
-    @PostMapping("/admin/checkout")
-    public String checkout(@Valid @ModelAttribute("purchase") Purchase purchase,
-                           BindingResult purchaseResult,
-                           Model model)
+  /*  @PostMapping("shared/checkout")
+    public String openPurchaseModal ()
     {
-        if(purchaseResult.hasErrors()) {
-            model.addAttribute("cartItems", cartItems);
-            return "shared/cart";
-        }
-        try {
-            purchaseService.save(purchase);
-            model.addAttribute("purchases", purchaseService.getAllPurchases());
-            return "success";
-        }catch (Exception e){
-            System.out.println("problem in checkout: " + e.getMessage());
-        }
-        model.addAttribute("cartItems", cartItems);
-        return "shared/cart";
-    }
-    @GetMapping("/shared/addToCart")
-    public String addToCart(@RequestParam("itemId") long itemId) {
-        MenuItem newItem = menuItemService.getMenuItem(itemId).get();
-        boolean itemFound = false;
-        for (CartItem cartItem : cartItems) {
-            if (Objects.equals(cartItem.getItem().getItem_id(), newItem.getItem_id()))
-            {
-                cartItem.increaseAmount();
-                itemFound = true;
-            }
-        }
-        if(!itemFound)
-            cartItems.add(new CartItem(newItem,1));
-        for (CartItem cartItem : cartItems)
-            System.out.println("item name: "+ cartItem.getItem().getMenuItemName() + "item amount: " + cartItem.getAmount());
-        return "redirect:/";
-    }
-    @PostMapping("/shared/cart")
-    public String openCart(@Valid CartItem cartItem, BindingResult itemResult,
-                           Model model){
-        if(itemResult.hasErrors())
-        {
-            model.addAttribute("purchase",new Purchase());
-            model.addAttribute("cartItems",cartItems);
-            return "shared/cart";
-        }
-        try {
-            model.addAttribute("purchase",new Purchase());
-            model.addAttribute("cartItems",cartItems);
-            return "shared/cart";
-        }catch(Exception e) {
-            System.out.println(e.getMessage());
-        }
-        model.addAttribute("purchase",new Purchase());
-        model.addAttribute("cartItems",cartItems);
-        return "shared/cart";
-    }
-    @PostMapping("/admin/decreaseQuantity")
-    public String decreaseCartItem(@RequestParam("menuItem_id") long menuItem_id,
-                                   @Valid CartItem cartItem, BindingResult itemResult,
-                                   Model model){
-        if(itemResult.hasErrors())
-        {
-            System.out.println("error in amount");
-            model.addAttribute("cartItem", cartItem);
-            model.addAttribute("item",new MenuItem());
-            model.addAttribute("amount",0);
-            model.addAttribute("cartItems",cartItems);
-            return "shared/cart";
-        }
-        try{
-            for(CartItem item:cartItems)
-                if(item.getItem().getItem_id() == menuItem_id) {
-                    cartItem = item;
-                    break;
-                }
-            if(cartItem.getAmount() < 1)
-                cartItem.setAmount(0);
-            else
-                cartItem.decreaseAmount();
 
-            model.addAttribute("cartItem", cartItem);
-            model.addAttribute("item",cartItem.getItem());
-            model.addAttribute("menuItem_id",cartItem.getItem().getItem_id());
-            model.addAttribute("cartItems",cartItems);
-            return "shared/cart";
-        }catch(Exception e){
-            System.out.println("messge in remove from cart" + e.getMessage());
-        }
-        model.addAttribute("item",new MenuItem());
-        model.addAttribute("amount",0);
-        model.addAttribute("cartItems",cartItems);
-        return "shared/cart";
-    }
+    }*/
+
+
     @GetMapping("/searchByName")
     public String searchByName(@RequestParam("menuItemName") String menuItemName,
                                @RequestParam(value = "vegan", required = false) boolean vegan,
@@ -214,13 +129,8 @@ public class RestaurantController {
                         searchResult.addAll(ing.getMenuItems());
             }
 
-            System.out.println("searchByIngredient results size: " + searchResult.size());
-         //   model.addAttribute("Ingredient", ingredientService.getIngredientsByName(ingredientName));
             model.addAttribute("menuItems",searchResult);
-        //    model.addAttribute("ingredientName" , ingredientName);
             ArrayList<Menu> menus = (ArrayList<Menu>) menuService.getAllMenus();
-            System.out.println("size of retrieved menus: " + menus.size());
-            //model.addAttribute("menuItemName", " ");
             model.addAttribute("menus",menus);
             return "index";
         }   catch(Exception e){
@@ -228,7 +138,121 @@ public class RestaurantController {
         }
         return "index";
     }
-    @PostMapping("/admin/increaseQuantity")
+    @PostMapping("/shared/purchaseComplete")
+    public String checkout(@Valid @ModelAttribute("purchase") Purchase purchase,
+                           BindingResult purchaseResult,
+                           Principal principal,
+                           Model model)
+    {
+        if(purchaseResult.hasErrors()) {
+            model.addAttribute("cartItems", cartItems);
+            return "shared/cart";
+        }
+        try {
+            System.out.println("purchase name: "+ purchase.getUserName());
+            String username = principal.getName();
+            purchase.setUserName(username);
+            purchaseService.save(purchase);
+
+            model.addAttribute("userName",username);
+            model.addAttribute("purchase",new Purchase());
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }catch (Exception e){
+
+            System.out.println("problem in checkout: " + e.getMessage());
+        }
+        model.addAttribute("cartItems", cartItems);
+        return "shared/cart";
+    }
+    @PostMapping("/shared/purchaseHistory")
+    public String purchaseHistory(Principal principal, Model model)
+    {
+        List<Purchase> purchases = new ArrayList<>();
+        String username = principal.getName(); // Retrieve the username directly
+
+        for (Purchase purchase : purchaseService.getAllPurchases()) {
+            if (purchase.getUserName().equals(username)) {
+                purchases.add(purchase);
+            }
+        }
+        model.addAttribute("purchases",purchases);
+        return "success";
+    }
+    @GetMapping("/shared/addToCart")
+    public String addToCart(@RequestParam("itemId") long itemId) {
+        MenuItem newItem = menuItemService.getMenuItem(itemId).get();
+        boolean itemFound = false;
+        for (CartItem cartItem : cartItems) {
+            if (Objects.equals(cartItem.getItem().getItem_id(), newItem.getItem_id()))
+            {
+                cartItem.increaseAmount();
+                itemFound = true;
+            }
+        }
+        if(!itemFound)
+            cartItems.add(new CartItem(newItem,1));
+        for (CartItem cartItem : cartItems)
+            System.out.println("item name: "+ cartItem.getItem().getMenuItemName() + "item amount: " + cartItem.getAmount());
+        return "redirect:/";
+    }
+    @PostMapping("/shared/cart")
+    public String openCart(@Valid CartItem cartItem, BindingResult itemResult,
+                           Model model){
+        if(itemResult.hasErrors())
+        {
+            model.addAttribute("purchase",new Purchase());
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }
+        try {
+            model.addAttribute("purchase",new Purchase());
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        model.addAttribute("purchase",new Purchase());
+        model.addAttribute("cartItems",cartItems);
+        return "shared/cart";
+    }
+    @PostMapping("/shared/decreaseQuantity")
+    public String decreaseCartItem(@RequestParam("menuItem_id") long menuItem_id,
+                                   @Valid CartItem cartItem, BindingResult itemResult,
+                                   Model model){
+        if(itemResult.hasErrors())
+        {
+            System.out.println("error in amount");
+            model.addAttribute("cartItem", cartItem);
+            model.addAttribute("item",new MenuItem());
+            model.addAttribute("amount",0);
+            model.addAttribute("purchase",new Purchase());
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }
+        try{
+            for(CartItem item:cartItems)
+                if(item.getItem().getItem_id() == menuItem_id) {
+                    cartItem = item;
+                    break;
+                }
+            if(cartItem.getAmount() < 1)
+                cartItem.setAmount(0);
+            else
+                cartItem.decreaseAmount();
+
+            model.addAttribute("purchase",new Purchase());
+            model.addAttribute("cartItems",cartItems);
+            return "shared/cart";
+        }catch(Exception e){
+            System.out.println("messge in remove from cart" + e.getMessage());
+        }
+        model.addAttribute("item",new MenuItem());
+        model.addAttribute("amount",0);
+        model.addAttribute("cartItems",cartItems);
+        return "shared/cart";
+    }
+    @PostMapping("/shared/increaseQuantity")
     public String increaseCartItem(@RequestParam("menuItem_id") long menuItem_id,
                                    @Valid CartItem cartItem, BindingResult itemResult,
                                    Model model){
@@ -238,6 +262,7 @@ public class RestaurantController {
             model.addAttribute("cartItem", cartItem);
             model.addAttribute("item",new MenuItem());
             model.addAttribute("amount",0);
+            model.addAttribute("purchase",new Purchase());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }
@@ -252,9 +277,7 @@ public class RestaurantController {
             else
                 cartItem.increaseAmount();
 
-            model.addAttribute("cartItem", cartItem);
-            model.addAttribute("item",cartItem.getItem());
-            model.addAttribute("menuItem_id",cartItem.getItem().getItem_id());
+            model.addAttribute("purchase",new Purchase());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e){
@@ -265,7 +288,7 @@ public class RestaurantController {
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
-    @PostMapping("/admin/setQuantity")
+    @PostMapping("/shared/setQuantity")
     public String setCartItemAmt(@RequestParam("menuItem_id") long menuItem_id,
                                  @RequestParam("amount") Integer amount,
                                    Model model){
@@ -282,7 +305,7 @@ public class RestaurantController {
 
                     break;
                 }
-
+            model.addAttribute("purchase",new Purchase());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e){
@@ -291,7 +314,7 @@ public class RestaurantController {
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
-    @PostMapping("/admin/removeFromCart")
+    @PostMapping("/shared/removeFromCart")
     public String removeFromCart(@RequestParam("menuItem_id") long menuItem_id,
                                  Model model)
     {
@@ -311,6 +334,32 @@ public class RestaurantController {
         model.addAttribute("item",new MenuItem());
         model.addAttribute("amount",0);
         model.addAttribute("cartItems",cartItems);
+        return "shared/cart";
+    }
+    @PostMapping("shared/checkout")
+    public String checkout(@RequestParam("userName") String name,
+                           @RequestParam("menuItem_id") long itemId,
+                           @RequestParam("modalToggle") boolean modal,
+                           Principal principal,
+                           Model model)
+    {
+        MenuItem menuItem = menuItemService.getMenuItem(itemId).get();
+        CartItem item = new CartItem();
+         for(CartItem cItem : cartItems)
+             if(cItem.getItem().getItem_id() == itemId)
+             {
+                 item = cItem;
+                 break;
+             }
+        System.out.println("user details: " + ((UserDetails) principal).getUsername());
+
+        Purchase purchase = new Purchase(((UserDetails) principal).getUsername()
+                ,menuItem.getMenuItemPrice()*item.getAmount(),menuItem );
+
+        model.addAttribute("purchase",purchase);
+        model.addAttribute("userName",name);
+        model.addAttribute("menuItem_id",itemId);
+        model.addAttribute("modalToggle",true);
         return "shared/cart";
     }
     @PostMapping("/admin/editMenu")

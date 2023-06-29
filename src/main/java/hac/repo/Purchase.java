@@ -36,27 +36,35 @@ public class Purchase implements Serializable {
     @Setter
     @Email
     private String email;
-
+    @Getter
+    @Setter
+    private String userName;
     @Getter
     @Setter
     @PositiveOrZero(message = "Payment must be positive or zero")
-    private Double payment = 0.0;
+    private double payment = 0.0;
     @Getter
     @Setter
-    private CartItem cartItem;
-    public Purchase(String email, Double total, String firstName, String lastName) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<MenuItem> purchaseItems = new ArrayList<>();
+    public Purchase(String email, Double total, String firstName, String lastName, MenuItem item) {
         this.email = email;
         this.payment = total;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.purchaseItems.add(item);
     }
-
+    public Purchase(String name, double payment, MenuItem item){
+        this.userName = name;
+        this.payment = payment;
+        this.purchaseItems.add(item);
+    }
     public Purchase() {
 
     }
-
-
-
+    public void addItemToPurchase(MenuItem item){
+        this.purchaseItems.add(item);
+    }
 }
 
 

@@ -21,6 +21,11 @@
             <input type = "submit" value = "cart"/>
           </form>
         </li>
+        <li sec:authorize="isAuthenticated()">
+          <form th:action="@{/shared/purchaseHistory}" method="post">
+            <input type = "submit" value = "Purchase History"/>
+          </form>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
