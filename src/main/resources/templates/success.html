@@ -1,0 +1,20 @@
+<h1>SUCCES</h1>
+<table class="table table-striped table-responsive-md">
+    <thead>
+    <tr>
+        <th>item name</th>
+    </tr>
+    </thead>
+    <tbody th:object="${purchases}">
+    <tr th:each="purchase: ${purchases}">
+        <td th:text="${purchase.firstName}"></td>
+        <td>
+            <form th:action="@{/admin/deleteItem}" method="post">
+                <input type="hidden" name="menuItem_id" th:value="${item.item_id}"/>
+                <input type="hidden" name="menu_id" th:value="${menu_id}"/>
+                <input type="submit" class="btn btn-primary" value="remove">
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>

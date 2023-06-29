@@ -3,6 +3,7 @@ package hac.controllers;
 import hac.Services.IngredientServices;
 import hac.Services.MenuItemServices;
 import hac.Services.MenuServices;
+import hac.Services.PurchaseServices;
 import hac.repo.*;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,9 +32,11 @@ public class RestaurantController {
     private MenuItemServices menuItemService;
     @Autowired
     private MenuServices menuService;
-
+    @Autowired
+    private PurchaseServices purchaseService;
     @Resource(name = "sessionBean")
     private ArrayList<CartItem> cartItems;
+
 
     @GetMapping("/login")
     public String login(Model model)
@@ -68,6 +71,25 @@ public class RestaurantController {
 
         return "index"; // Thymeleaf template to display the menu items
     }
+    @PostMapping("/admin/checkout")
+    public String checkout(@Valid @ModelAttribute("purchase") Purchase purchase,
+                           BindingResult purchaseResult,
+                           Model model)
+    {
+        if(purchaseResult.hasErrors()) {
+            model.addAttribute("cartItems", cartItems);
+            return "shared/cart";
+        }
+        try {
+            purchaseService.save(purchase);
+            model.addAttribute("purchases", purchaseService.getAllPurchases());
+            return "success";
+        }catch (Exception e){
+            System.out.println("problem in checkout: " + e.getMessage());
+        }
+        model.addAttribute("cartItems", cartItems);
+        return "shared/cart";
+    }
     @GetMapping("/shared/addToCart")
     public String addToCart(@RequestParam("itemId") long itemId) {
         MenuItem newItem = menuItemService.getMenuItem(itemId).get();
@@ -90,16 +112,18 @@ public class RestaurantController {
                            Model model){
         if(itemResult.hasErrors())
         {
+            model.addAttribute("purchase",new Purchase());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }
         try {
-
+            model.addAttribute("purchase",new Purchase());
             model.addAttribute("cartItems",cartItems);
             return "shared/cart";
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }
+        model.addAttribute("purchase",new Purchase());
         model.addAttribute("cartItems",cartItems);
         return "shared/cart";
     }
