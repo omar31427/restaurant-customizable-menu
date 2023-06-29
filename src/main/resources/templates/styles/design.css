@@ -14,3 +14,19 @@
 .card-img-top {
 
 }
+
+.container {
+    margin-top: 100px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    margin-top: 20px;
+}
+
+.table {
+    margin-top: 20px;
+}
