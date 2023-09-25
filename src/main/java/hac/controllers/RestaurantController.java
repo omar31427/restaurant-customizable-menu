@@ -166,7 +166,7 @@ public class RestaurantController {
         return "shared/cart";
     }
     @PostMapping("/admin/globalPurchaseHistory")
-    public String globaPurchaseHistory (Model model)
+    public String globalPurchaseHistory (Model model)
     {
         model.addAttribute("purchases",purchaseService.getAllPurchases());
         return "success";
